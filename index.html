@@ -1,0 +1,1216 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FuelChain Bolivia — Custodia Digital de Combustible</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0A0D12;
+    --panel:#12161D;
+    --panel-2:#171C25;
+    --border:#232935;
+    --border-soft:#1B212B;
+    --cyan:#29D3C0;
+    --indigo:#6E7BFF;
+    --amber:#F5A623;
+    --red:#FF4757;
+    --green:#35D07F;
+    --text:#E7ECF3;
+    --muted:#7C8798;
+    --muted-2:#4E5867;
+    --mono:'IBM Plex Mono', monospace;
+    --display:'Space Grotesk', sans-serif;
+    --body:'Inter', sans-serif;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;background:var(--bg);color:var(--text);font-family:var(--body);height:100%;}
+  body{overflow-x:hidden;}
+  #app{display:flex;min-height:100vh;}
+  ::-webkit-scrollbar{width:8px;height:8px;}
+  ::-webkit-scrollbar-thumb{background:#2A313D;border-radius:4px;}
+  a{color:inherit;}
+
+  /* ---------- Sidebar ---------- */
+  .sidebar{
+    width:230px;flex-shrink:0;background:linear-gradient(180deg,#0D1117,#0A0D12);
+    border-right:1px solid var(--border);display:flex;flex-direction:column;
+    position:sticky;top:0;height:100vh;z-index:20;
+  }
+  .brand{padding:20px 18px 14px;border-bottom:1px solid var(--border-soft);}
+  .brand-mark{display:flex;align-items:center;gap:10px;}
+  .brand-dot{width:10px;height:10px;border-radius:2px;background:var(--cyan);box-shadow:0 0 12px var(--cyan);}
+  .brand-title{font-family:var(--display);font-weight:700;font-size:15.5px;letter-spacing:0.5px;}
+  .brand-sub{font-family:var(--mono);font-size:10px;color:var(--muted);letter-spacing:1.5px;margin-top:4px;text-transform:uppercase;}
+  .nav{padding:14px 10px;flex:1;overflow-y:auto;}
+  .nav-group-label{font-family:var(--mono);font-size:10px;color:var(--muted-2);text-transform:uppercase;letter-spacing:1.2px;padding:12px 10px 6px;}
+  .nav-item{
+    display:flex;align-items:center;gap:10px;padding:9px 10px;border-radius:6px;
+    font-size:13.5px;color:var(--muted);cursor:pointer;margin-bottom:2px;border:1px solid transparent;
+    transition:background .12s,color .12s;
+  }
+  .nav-item svg{width:15px;height:15px;flex-shrink:0;}
+  .nav-item:hover{background:var(--panel-2);color:var(--text);}
+  .nav-item.active{background:rgba(41,211,192,0.08);color:var(--cyan);border-color:rgba(41,211,192,0.25);}
+  .nav-badge{margin-left:auto;font-family:var(--mono);font-size:10px;background:var(--red);color:#fff;padding:1px 6px;border-radius:10px;}
+  .sidebar-footer{padding:12px 14px;border-top:1px solid var(--border-soft);font-family:var(--mono);font-size:10px;color:var(--muted-2);}
+
+  /* ---------- Main ---------- */
+  .main{flex:1;min-width:0;display:flex;flex-direction:column;}
+  .topbar{
+    height:56px;border-bottom:1px solid var(--border);display:flex;align-items:center;
+    padding:0 20px;gap:16px;position:sticky;top:0;background:rgba(10,13,18,0.85);backdrop-filter:blur(8px);z-index:10;
+  }
+  .topbar-title{font-family:var(--display);font-weight:600;font-size:15px;}
+  .topbar-sub{font-family:var(--mono);font-size:10.5px;color:var(--muted);}
+  .status-pills{margin-left:auto;display:flex;gap:8px;flex-wrap:wrap;}
+  .pill{
+    display:flex;align-items:center;gap:6px;padding:4px 10px;border-radius:20px;background:var(--panel-2);
+    border:1px solid var(--border);font-family:var(--mono);font-size:10.5px;color:var(--muted);
+  }
+  .pill .dot{width:6px;height:6px;border-radius:50%;background:var(--green);box-shadow:0 0 6px var(--green);}
+  .pill.down .dot{background:var(--red);box-shadow:0 0 6px var(--red);}
+  .content{padding:22px 26px 60px;max-width:1400px;width:100%;}
+
+  h1.page-title{font-family:var(--display);font-size:20px;margin:0 0 4px;}
+  p.page-desc{color:var(--muted);font-size:13px;margin:0 0 20px;max-width:720px;}
+
+  /* ---------- Cards / grid ---------- */
+  .grid{display:grid;gap:14px;}
+  .grid-kpi{grid-template-columns:repeat(auto-fit,minmax(160px,1fr));}
+  .grid-2{grid-template-columns:2fr 1fr;}
+  .grid-3{grid-template-columns:repeat(3,1fr);}
+  @media(max-width:900px){.grid-2,.grid-3{grid-template-columns:1fr;}}
+  .card{
+    background:var(--panel);border:1px solid var(--border);border-radius:10px;padding:16px;
+  }
+  .card-title{font-family:var(--mono);font-size:10.5px;letter-spacing:1px;text-transform:uppercase;color:var(--muted);margin:0 0 12px;display:flex;align-items:center;justify-content:space-between;}
+  .kpi-card{background:var(--panel);border:1px solid var(--border);border-radius:10px;padding:14px 16px;position:relative;overflow:hidden;}
+  .kpi-label{font-family:var(--mono);font-size:10px;text-transform:uppercase;letter-spacing:1px;color:var(--muted);}
+  .kpi-value{font-family:var(--display);font-size:26px;font-weight:700;margin-top:6px;}
+  .kpi-accent{position:absolute;top:0;right:0;bottom:0;width:3px;}
+
+  /* ---------- Buttons ---------- */
+  .btn{
+    font-family:var(--body);font-weight:600;font-size:13px;padding:9px 16px;border-radius:7px;border:1px solid var(--border);
+    background:var(--panel-2);color:var(--text);cursor:pointer;transition:transform .08s, background .12s;display:inline-flex;align-items:center;gap:8px;
+  }
+  .btn:hover{background:#1E2530;}
+  .btn:active{transform:scale(0.98);}
+  .btn-primary{background:linear-gradient(135deg,var(--cyan),#1CA89B);border-color:transparent;color:#03211E;}
+  .btn-primary:hover{filter:brightness(1.08);}
+  .btn-danger{background:linear-gradient(135deg,var(--red),#C93244);border-color:transparent;color:#fff;}
+  .btn-warn{background:linear-gradient(135deg,var(--amber),#C97D12);border-color:transparent;color:#241500;}
+  .btn-indigo{background:linear-gradient(135deg,var(--indigo),#4C58D0);border-color:transparent;color:#fff;}
+  .btn:disabled{opacity:0.4;cursor:not-allowed;}
+  .btn-sm{padding:6px 11px;font-size:12px;}
+  .btn-row{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px;}
+
+  /* ---------- Badges ---------- */
+  .badge{font-family:var(--mono);font-size:10.5px;padding:3px 9px;border-radius:20px;letter-spacing:0.4px;display:inline-block;white-space:nowrap;}
+  .badge-created{background:rgba(110,123,255,0.14);color:var(--indigo);}
+  .badge-transit{background:rgba(41,211,192,0.14);color:var(--cyan);}
+  .badge-warning{background:rgba(245,166,35,0.14);color:var(--amber);}
+  .badge-blocked{background:rgba(255,71,87,0.14);color:var(--red);}
+  .badge-dest{background:rgba(53,208,127,0.14);color:var(--green);}
+  .badge-auth{background:rgba(53,208,127,0.14);color:var(--green);}
+  .badge-delivered{background:rgba(53,208,127,0.2);color:var(--green);}
+  .badge-critica{background:rgba(255,71,87,0.16);color:var(--red);}
+  .badge-warning-sev{background:rgba(245,166,35,0.16);color:var(--amber);}
+  .badge-info{background:rgba(124,135,152,0.18);color:var(--muted);}
+
+  /* ---------- Table ---------- */
+  table{width:100%;border-collapse:collapse;font-size:12.5px;}
+  th{text-align:left;font-family:var(--mono);font-size:10px;text-transform:uppercase;letter-spacing:0.6px;color:var(--muted);padding:8px 10px;border-bottom:1px solid var(--border);position:sticky;top:0;background:var(--panel);}
+  td{padding:9px 10px;border-bottom:1px solid var(--border-soft);font-family:var(--mono);color:var(--text);}
+  tr:hover td{background:rgba(255,255,255,0.015);}
+  .table-wrap{overflow:auto;max-height:460px;border:1px solid var(--border);border-radius:8px;}
+  .empty-state{padding:40px 20px;text-align:center;color:var(--muted);font-size:13px;}
+  .empty-state .icon{font-size:26px;margin-bottom:8px;}
+
+  /* ---------- Tabs / segmented ---------- */
+  .segmented{display:flex;gap:6px;background:var(--panel-2);padding:4px;border-radius:8px;border:1px solid var(--border);width:fit-content;margin-bottom:16px;flex-wrap:wrap;}
+  .segmented button{border:none;background:transparent;color:var(--muted);font-family:var(--mono);font-size:11.5px;padding:6px 12px;border-radius:6px;cursor:pointer;}
+  .segmented button.active{background:var(--panel);color:var(--cyan);}
+
+  /* ---------- Modal ---------- */
+  .modal-overlay{position:fixed;inset:0;background:rgba(5,7,10,0.7);backdrop-filter:blur(3px);display:flex;align-items:center;justify-content:center;z-index:100;padding:16px;}
+  .modal{background:var(--panel);border:1px solid var(--border);border-radius:12px;width:100%;max-width:480px;padding:22px;box-shadow:0 20px 60px rgba(0,0,0,0.5);}
+  .modal h3{font-family:var(--display);margin:0 0 4px;font-size:17px;}
+  .modal p.hint{color:var(--muted);font-size:12.5px;margin:0 0 16px;}
+  .field{margin-bottom:12px;}
+  .field label{display:block;font-family:var(--mono);font-size:10.5px;text-transform:uppercase;letter-spacing:0.5px;color:var(--muted);margin-bottom:5px;}
+  .field input,.field select{
+    width:100%;background:#0D1117;border:1px solid var(--border);color:var(--text);padding:9px 10px;border-radius:6px;font-size:13px;font-family:var(--body);
+  }
+  .field input:focus,.field select:focus{outline:none;border-color:var(--cyan);}
+  .modal-actions{display:flex;justify-content:flex-end;gap:10px;margin-top:18px;}
+
+  /* ---------- Toast ---------- */
+  #toast-stack{position:fixed;top:16px;right:16px;z-index:200;display:flex;flex-direction:column;gap:8px;max-width:340px;}
+  .toast{
+    background:var(--panel);border:1px solid var(--border);border-left:3px solid var(--cyan);border-radius:8px;
+    padding:12px 14px;font-size:12.5px;box-shadow:0 8px 24px rgba(0,0,0,0.4);animation:slideIn .2s ease;
+  }
+  .toast.success{border-left-color:var(--green);}
+  .toast.error{border-left-color:var(--red);}
+  .toast.warn{border-left-color:var(--amber);}
+  .toast b{display:block;font-family:var(--display);font-size:12.5px;margin-bottom:2px;}
+  @keyframes slideIn{from{transform:translateX(20px);opacity:0;}to{transform:translateX(0);opacity:1;}}
+
+  /* ---------- Custody chain (signature element) ---------- */
+  .chain-strip{display:flex;align-items:center;overflow-x:auto;padding:10px 4px 16px;gap:0;}
+  .chain-block{
+    flex-shrink:0;width:150px;background:var(--panel-2);border:1px solid var(--border);border-radius:8px;padding:10px 12px;
+    position:relative;
+  }
+  .chain-block.genesis{border-color:var(--indigo);}
+  .chain-block.tamper{border-color:var(--red);box-shadow:0 0 0 1px var(--red) inset;}
+  .chain-block .num{font-family:var(--mono);font-size:9.5px;color:var(--muted);}
+  .chain-block .ev{font-family:var(--display);font-size:12px;margin:3px 0 6px;color:var(--text);}
+  .chain-block .h{font-family:var(--mono);font-size:9.5px;color:var(--cyan);word-break:break-all;}
+  .chain-link{width:26px;height:2px;background:linear-gradient(90deg,var(--cyan),var(--indigo));flex-shrink:0;position:relative;}
+  .chain-link::after{content:'';position:absolute;right:-3px;top:-2px;width:6px;height:6px;border-radius:50%;background:var(--indigo);}
+
+  /* ---------- Map ---------- */
+  .map-wrap{background:#0D1117;border:1px solid var(--border);border-radius:8px;padding:10px;}
+  .map-legend{display:flex;gap:14px;margin-top:8px;font-family:var(--mono);font-size:10.5px;color:var(--muted);flex-wrap:wrap;}
+  .map-legend span{display:flex;align-items:center;gap:5px;}
+  .map-legend i{width:8px;height:8px;border-radius:50%;display:inline-block;}
+
+  /* ---------- Timeline ---------- */
+  .timeline{position:relative;padding-left:26px;}
+  .timeline::before{content:'';position:absolute;left:8px;top:4px;bottom:4px;width:1px;background:var(--border);}
+  .t-item{position:relative;padding-bottom:20px;}
+  .t-dot{position:absolute;left:-26px;top:2px;width:14px;height:14px;border-radius:50%;background:var(--panel);border:2px solid var(--cyan);}
+  .t-item.crit .t-dot{border-color:var(--red);}
+  .t-item.warn .t-dot{border-color:var(--amber);}
+  .t-item.ok .t-dot{border-color:var(--green);}
+  .t-title{font-family:var(--display);font-size:13px;}
+  .t-meta{font-family:var(--mono);font-size:10.5px;color:var(--muted);margin-top:2px;}
+  .t-desc{font-size:12.5px;color:var(--muted);margin-top:3px;}
+
+  /* ---------- Attack flow ---------- */
+  .flow{display:flex;flex-direction:column;align-items:center;gap:4px;max-width:360px;margin:0 auto;}
+  .flow-step{
+    width:100%;background:var(--panel-2);border:1px solid var(--border);border-radius:8px;padding:10px 14px;text-align:center;
+    font-family:var(--mono);font-size:12px;opacity:0.25;transition:opacity .25s, border-color .25s, background .25s;
+  }
+  .flow-step.active{opacity:1;border-color:var(--cyan);}
+  .flow-step.fail{opacity:1;border-color:var(--red);background:rgba(255,71,87,0.08);color:var(--red);}
+  .flow-arrow{color:var(--muted-2);font-size:16px;}
+
+  .checklist-item{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--border-soft);font-family:var(--mono);font-size:13px;opacity:0.25;transition:opacity .2s;}
+  .checklist-item.active{opacity:1;}
+  .checklist-item .ico{width:18px;}
+
+  .section-hidden{display:none;}
+  .muted{color:var(--muted);}
+  .mono{font-family:var(--mono);}
+  .flex-between{display:flex;align-items:center;justify-content:space-between;}
+  .small{font-size:11px;}
+  .divider{height:1px;background:var(--border-soft);margin:14px 0;}
+  code.inline{background:#0D1117;padding:1px 5px;border-radius:4px;font-family:var(--mono);font-size:11.5px;border:1px solid var(--border);}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<div id="toast-stack"></div>
+
+<script>
+/* =========================================================================
+   FUELCHAIN BOLIVIA — CONTROL CENTER (single-file web demo)
+   Puerto web funcional del prototipo de consola original.
+   - "Base de datos" -> arreglos en memoria persistidos con window.storage
+   - "Blockchain"    -> cadena de hashes SHA-256 real (Web Crypto API)
+   - "HSM"           -> SIMULACIÓN CRIPTOGRÁFICA PARA DEMOSTRACIÓN (no es HSM físico)
+   ========================================================================= */
+
+const STORAGE_KEY = 'fuelchain:state:v1';
+const HSM_KEY = 'HSM_FUELCHAIN_YPFB_ANH_DEMO'; // clave de demo, NO usar en producción
+
+let state = null;
+let currentTab = 'dashboard';
+let selectedDbTable = 'envios';
+let busy = false; // bloquea acciones concurrentes durante animaciones
+
+/* ----------------------------- utilidades ----------------------------- */
+function nowStr(){
+  const d = new Date();
+  const p = n => String(n).padStart(2,'0');
+  return `${d.getFullYear()}-${p(d.getMonth()+1)}-${p(d.getDate())} ${p(d.getHours())}:${p(d.getMinutes())}:${p(d.getSeconds())}`;
+}
+function sleep(ms){ return new Promise(r=>setTimeout(r,ms)); }
+function fmt(n){ return Number(n).toLocaleString('es-BO',{maximumFractionDigits:2}); }
+function truncHash(h,n=18){ return h ? (h.slice(0,n)+'…') : ''; }
+function codeEnvio(id){ return 'ENV-'+String(id).padStart(4,'0'); }
+function stableStringify(v){
+  if (v===null || typeof v !== 'object') return JSON.stringify(v);
+  if (Array.isArray(v)) return '['+v.map(stableStringify).join(',')+']';
+  const keys = Object.keys(v).sort();
+  return '{'+keys.map(k=>JSON.stringify(k)+':'+stableStringify(v[k])).join(',')+'}';
+}
+async function sha256Hex(str){
+  const enc = new TextEncoder().encode(str);
+  const buf = await crypto.subtle.digest('SHA-256', enc);
+  return Array.from(new Uint8Array(buf)).map(b=>b.toString(16).padStart(2,'0')).join('');
+}
+async function generarFirma(datos){
+  return sha256Hex(stableStringify(datos)+HSM_KEY);
+}
+async function verificarFirma(datos, firma){
+  return (await generarFirma(datos)) === firma;
+}
+function toast(title, msg, type='info'){
+  const el = document.createElement('div');
+  el.className = 'toast '+type;
+  el.innerHTML = `<b>${title}</b>${msg||''}`;
+  document.getElementById('toast-stack').appendChild(el);
+  setTimeout(()=>{ el.style.opacity='0'; el.style.transition='opacity .3s'; setTimeout(()=>el.remove(),300); }, 4200);
+}
+
+/* ----------------------------- persistencia -----------------------------
+   Si la app corre dentro del entorno de artifacts de Claude.ai usa
+   window.storage. Si se abrió como archivo HTML descargado/local (donde
+   window.storage no existe), usa localStorage del navegador como
+   alternativa equivalente, sin perder funcionalidad. */
+const HAS_ARTIFACT_STORAGE = (typeof window !== 'undefined' && window.storage && typeof window.storage.set === 'function');
+let storageWarned = false;
+
+async function saveState(){
+  const payload = JSON.stringify(state);
+  if(HAS_ARTIFACT_STORAGE){
+    try{ await window.storage.set(STORAGE_KEY, payload, false); return; }
+    catch(e){ console.warn('window.storage falló, usando localStorage', e); }
+  }
+  try{ localStorage.setItem(STORAGE_KEY, payload); }
+  catch(e){
+    console.error('Error guardando estado', e);
+    if(!storageWarned){ storageWarned = true; toast('Error de almacenamiento','No se pudo guardar el estado en este navegador (¿modo privado?).','error'); }
+  }
+}
+async function loadState(){
+  if(HAS_ARTIFACT_STORAGE){
+    try{
+      const res = await window.storage.get(STORAGE_KEY, false);
+      if(res && res.value){ state = JSON.parse(res.value); return true; }
+    }catch(e){ /* clave inexistente u otro error: seguimos con el respaldo local */ }
+  }
+  try{
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if(raw){ state = JSON.parse(raw); return true; }
+  }catch(e){ /* localStorage no disponible */ }
+  return false;
+}
+
+/* ----------------------------- semilla demo ----------------------------- */
+async function seedDemo(){
+  state = {
+    camiones: [{id:1, placa:'TRUCK-LPZ-001', conductor:'Conductor Demo', capacidad:20000, estado:'DISPONIBLE', fecha_registro:nowStr()}],
+    envios: [],
+    sensores: [],
+    eventos: [],
+    bloques: [],
+    activeEnvioId: null,
+    nextIds: {camion:2, envio:1, sensor:1, evento:1},
+    system: {sensores:true, hsm:true, blockchain:true, sqlite:true, api:true}
+  };
+  await saveState();
+}
+
+/* ----------------------------- capa blockchain ----------------------------- */
+async function crearBloque(evento, datos){
+  const numero = state.bloques.length;
+  const hash_anterior = numero===0 ? 'GENESIS' : state.bloques[numero-1].hash_actual;
+  const fecha = nowStr();
+  const info = {numero, evento, datos, hash_anterior, fecha};
+  const hash_actual = await sha256Hex(stableStringify(info));
+  const bloque = {numero, evento, datos, hash_anterior, hash_actual, fecha};
+  state.bloques.push(bloque);
+  return bloque;
+}
+async function verificarIntegridadBlockchain(){
+  const bloques = state.bloques;
+  if(bloques.length===0) return {ok:true, detalle:'Blockchain vacía — nada que verificar.', fallo:null};
+  let esperado = 'GENESIS';
+  for(const b of bloques){
+    const info = {numero:b.numero, evento:b.evento, datos:b.datos, hash_anterior:b.hash_anterior, fecha:b.fecha};
+    const calc = await sha256Hex(stableStringify(info));
+    if(b.hash_anterior !== esperado){
+      return {ok:false, detalle:`Bloque #${b.numero}: hash_anterior no coincide con el hash del bloque previo.`, fallo:b.numero};
+    }
+    if(calc !== b.hash_actual){
+      return {ok:false, detalle:`Bloque #${b.numero}: el hash almacenado no corresponde a su contenido (posible alteración).`, fallo:b.numero};
+    }
+    esperado = b.hash_actual;
+  }
+  return {ok:true, detalle:`Se verificaron ${bloques.length} bloques. Cadena consistente.`, fallo:null};
+}
+
+/* ----------------------------- lógica de negocio ----------------------------- */
+function getCamionByPlaca(placa){ return state.camiones.find(c=>c.placa===placa); }
+function ensureCamion(placa, conductor, capacidad){
+  let c = getCamionByPlaca(placa);
+  if(c) return c;
+  c = {id: state.nextIds.camion++, placa, conductor: conductor||'Conductor Demo', capacidad: capacidad||20000, estado:'DISPONIBLE', fecha_registro: nowStr()};
+  state.camiones.push(c);
+  return c;
+}
+function getEnvio(id){ return state.envios.find(e=>e.id===id); }
+function activeEnvio(){ return state.activeEnvioId ? getEnvio(state.activeEnvioId) : null; }
+
+async function crearLote({placa, conductor, origen, destino, volumen}){
+  const camion = ensureCamion(placa, conductor, 20000);
+  const envio = {
+    id: state.nextIds.envio++,
+    camion_id: camion.id,
+    camion: camion.placa,
+    origen, destino,
+    volumen_inicial: volumen,
+    volumen_actual: volumen,
+    estado: 'CREATED',
+    fecha: nowStr()
+  };
+  state.envios.push(envio);
+  state.activeEnvioId = envio.id;
+  const bloque = await crearBloque('MINT_FUEL_BATCH', {
+    envio_id: envio.id, camion: camion.placa, origen, destino, volumen
+  });
+  await saveState();
+  return {envio, bloque};
+}
+
+function generarAlerta(envio_id, descripcion, tipo, severidad){
+  const ev = {id: state.nextIds.evento++, envio_id, tipo, descripcion, severidad, estado:'OPEN', fecha: nowStr()};
+  state.eventos.push(ev);
+  return ev;
+}
+
+/* NOTA: en el código original, "El Alto" y "Estación destino" compartían
+   exactamente las mismas coordenadas, lo que hacía que el marcador del
+   camión pareciera "congelado" en el último tramo del viaje (ambos puntos
+   caían en el mismo pixel del mapa). Se corrige aquí dando a la estación
+   de destino una coordenada propia, cercana a La Paz, preservando el
+   mismo recorrido conceptual Senkata → El Alto → Autopista → La Paz → Destino. */
+const RUTA = [
+  {nombre:'Senkata', lat:-16.515, lon:-68.193},
+  {nombre:'El Alto', lat:-16.500, lon:-68.150},
+  {nombre:'Autopista', lat:-16.510, lon:-68.140},
+  {nombre:'La Paz', lat:-16.495, lon:-68.145},
+  {nombre:'Estación destino', lat:-16.488, lon:-68.132},
+];
+
+async function simularViajePaso(idx, envio, onStep){
+  const punto = RUTA[idx];
+  await sleep(550);
+  const perdida = Math.floor(10 + Math.random()*20);
+  envio.volumen_actual = Math.max(0, envio.volumen_actual - perdida);
+  const densidad = +(0.735 + Math.random()*0.01).toFixed(3);
+  const temperatura = +(18 + Math.random()*4).toFixed(1);
+  const datosLectura = {
+    envio_id: envio.id, camion: envio.camion, volumen: envio.volumen_actual,
+    densidad, temperatura, latitud: punto.lat, longitud: punto.lon
+  };
+  const firma = await generarFirma(datosLectura);
+  const lectura = {id: state.nextIds.sensor++, ...datosLectura, firma, fecha: nowStr(), punto: punto.nombre};
+  state.sensores.push(lectura);
+  const bloque = await crearBloque('SENSOR_READING', datosLectura);
+  envio.estado = (idx === RUTA.length-1) ? 'AT_DESTINATION' : 'IN_TRANSIT';
+  await saveState();
+  if(onStep) onStep(idx, lectura, bloque);
+}
+
+async function simularOrdeno(envio){
+  const volumen_esperado = envio.volumen_actual;
+  await sleep(700);
+  const volumen_detectado = Math.max(0, volumen_esperado - 4000);
+  const diferencia = volumen_esperado - volumen_detectado;
+  let anomalia = false, bloque = null, alerta = null;
+  if(diferencia > 1000){
+    anomalia = true;
+    envio.volumen_actual = volumen_detectado;
+    envio.estado = 'BLOCKED';
+    alerta = generarAlerta(envio.id, 'Variación anormal de volumen detectada', 'SUSPECTED_TAMPER', 'CRITICA');
+    bloque = await crearBloque('SUSPECTED_TAMPER', {
+      envio_id: envio.id, camion: envio.camion, volumen_esperado, volumen_detectado, diferencia, accion:'DELIVERY_BLOCKED'
+    });
+  }
+  await saveState();
+  return {volumen_esperado, volumen_detectado, diferencia, anomalia, bloque, alerta};
+}
+
+async function simularAtaqueSensor(envio, updateFlow){
+  updateFlow(0); await sleep(500);
+  const datosOriginales = {
+    envio_id: envio.id, camion: envio.camion, volumen: envio.volumen_actual,
+    densidad: 0.740, temperatura: 20.0, latitud: -16.510, longitud: -68.140
+  };
+  const firmaOriginal = await generarFirma(datosOriginales);
+  updateFlow(1); await sleep(600);
+  updateFlow(2); await sleep(700);
+  const datosModificados = {...datosOriginales, volumen: 20000};
+  updateFlow(3); await sleep(700);
+  const firmaValida = await verificarFirma(datosModificados, firmaOriginal);
+  updateFlow(4); await sleep(500);
+  let bloque=null, alerta=null;
+  if(!firmaValida){
+    envio.estado = 'BLOCKED';
+    alerta = generarAlerta(envio.id, 'Intento de manipulación de datos del sensor', 'HSM_SIGNATURE_FAILURE', 'CRITICA');
+    bloque = await crearBloque('HSM_SIGNATURE_FAILURE', {
+      envio_id: envio.id, camion: envio.camion, evento:'HSM_SIGNATURE_FAILURE', accion:'DELIVERY_BLOCKED'
+    });
+    updateFlow(5);
+  } else {
+    updateFlow('ok');
+  }
+  await saveState();
+  return {firmaValida, datosOriginales, datosModificados, firmaOriginal, bloque, alerta};
+}
+
+async function ejecutarEntrega(envio, onCheck){
+  const bloqueado = envio.estado === 'BLOCKED';
+  const checks = {
+    gps: true,
+    tanque: true,
+    firma: !bloqueado,
+    precinto: !bloqueado
+  };
+  const order = ['gps','tanque','firma','precinto'];
+  for(const k of order){ await sleep(450); onCheck(k, checks[k]); }
+  await sleep(300);
+  const autorizado = Object.values(checks).every(Boolean);
+  envio.estado = autorizado ? 'DELIVERED' : 'BLOCKED';
+  const bloque = await crearBloque(autorizado ? 'DELIVERY_AUTHORIZED' : 'DELIVERY_BLOCKED', {
+    envio_id: envio.id, camion: envio.camion, destino: envio.destino, estado: envio.estado
+  });
+  await saveState();
+  return {autorizado, checks, bloque};
+}
+
+function alterarBloqueDemo(){
+  if(state.bloques.length===0) return null;
+  const idx = state.bloques.length - 1;
+  const b = state.bloques[idx];
+  b.datos = {...b.datos, volumen: (b.datos.volumen||0) + 9999, _alterado_manualmente: true};
+  b._tampered = true;
+  return b;
+}
+
+/* ============================== ICONOS (SVG inline) ============================== */
+const ICONS = {
+  dashboard: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="7" height="9" rx="1"/><rect x="14" y="3" width="7" height="5" rx="1"/><rect x="14" y="12" width="7" height="9" rx="1"/><rect x="3" y="16" width="7" height="5" rx="1"/></svg>',
+  envios: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 7h11v9H3z"/><path d="M14 10h4l3 3v3h-7z"/><circle cx="7" cy="18" r="1.6"/><circle cx="17.5" cy="18" r="1.6"/></svg>',
+  monitor: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 21s7-6.2 7-11a7 7 0 10-14 0c0 4.8 7 11 7 11z"/><circle cx="12" cy="10" r="2.4"/></svg>',
+  sensores: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 14a8 8 0 0116 0"/><path d="M7.5 14a4.5 4.5 0 019 0"/><circle cx="12" cy="14" r="1.6"/></svg>',
+  alertas: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3l9 16H3z"/><path d="M12 10v4"/><circle cx="12" cy="17" r="0.6" fill="currentColor"/></svg>',
+  simulaciones: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M5 3v18l14-9z"/></svg>',
+  entrega: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M9 12l2 2 4-4"/><circle cx="12" cy="12" r="9"/></svg>',
+  blockchain: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="2" y="8" width="7" height="7" rx="1.5"/><rect x="15" y="8" width="7" height="7" rx="1.5"/><path d="M9 11.5h6"/></svg>',
+  database: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><ellipse cx="12" cy="5" rx="8" ry="3"/><path d="M4 5v14c0 1.7 3.6 3 8 3s8-1.3 8-3V5"/><path d="M4 12c0 1.7 3.6 3 8 3s8-1.3 8-3"/></svg>',
+  audit: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 4h16v16H4z"/><path d="M8 9h8M8 13h8M8 17h4"/></svg>',
+  demo: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M10 8.5l6 3.5-6 3.5z"/></svg>',
+};
+
+const NAV = [
+  {id:'dashboard', label:'Control Center', icon:'dashboard'},
+  {id:'envios', label:'Envíos', icon:'envios'},
+  {id:'monitor', label:'Monitoreo en Vivo', icon:'monitor'},
+  {id:'sensores', label:'Sensores IoT', icon:'sensores'},
+  {id:'alertas', label:'Centro de Alertas', icon:'alertas'},
+  {id:'simulaciones', label:'Simulaciones', icon:'simulaciones'},
+  {id:'entrega', label:'Control de Entrega', icon:'entrega'},
+  {id:'blockchain', label:'Blockchain', icon:'blockchain'},
+  {id:'database', label:'Base de Datos', icon:'database'},
+  {id:'audit', label:'Auditoría', icon:'audit'},
+  {id:'demo', label:'Modo Demostración', icon:'demo'},
+];
+
+/* ============================== RENDER SHELL ============================== */
+function badgeForEstado(estado){
+  const map = {
+    CREATED:'badge-created', IN_TRANSIT:'badge-transit', WARNING:'badge-warning',
+    BLOCKED:'badge-blocked', AT_DESTINATION:'badge-dest', AUTHORIZED:'badge-auth', DELIVERED:'badge-delivered'
+  };
+  return `<span class="badge ${map[estado]||'badge-info'}">${estado}</span>`;
+}
+function badgeForSeveridad(sev){
+  const map = {CRITICA:'badge-critica', WARNING:'badge-warning-sev', INFO:'badge-info'};
+  return `<span class="badge ${map[sev]||'badge-info'}">${sev}</span>`;
+}
+function countAlertasAbiertas(){ return state.eventos.filter(e=>e.severidad==='CRITICA' && e.estado==='OPEN').length; }
+
+function render(){
+  const app = document.getElementById('app');
+  const critCount = countAlertasAbiertas();
+  app.innerHTML = `
+    <div class="sidebar">
+      <div class="brand">
+        <div class="brand-mark"><div class="brand-dot"></div><div class="brand-title">FUELCHAIN</div></div>
+        <div class="brand-sub">Custodia Digital · Bolivia</div>
+      </div>
+      <div class="nav">
+        <div class="nav-group-label">Operaciones</div>
+        ${NAV.slice(0,7).map(navItem).join('')}
+        <div class="nav-group-label">Confianza &amp; Registro</div>
+        ${NAV.slice(7).map(navItem).join('')}
+      </div>
+      <div class="sidebar-footer">SENKATA → LA PAZ<br/>v1.0 · demo local</div>
+    </div>
+    <div class="main">
+      <div class="topbar">
+        <div>
+          <div class="topbar-title">${NAV.find(n=>n.id===currentTab).label}</div>
+          <div class="topbar-sub">FuelChain Bolivia / Centro de Operaciones</div>
+        </div>
+        <div class="status-pills">
+          ${pill('Sensores', state.system.sensores)}
+          ${pill('HSM', state.system.hsm)}
+          ${pill('Blockchain', state.system.blockchain)}
+          ${pill('SQLite', state.system.sqlite)}
+          ${pill('API', state.system.api)}
+        </div>
+      </div>
+      <div class="content" id="content"></div>
+    </div>
+  `;
+  function navItem(n){
+    return `<div class="nav-item ${currentTab===n.id?'active':''}" onclick="setTab('${n.id}')">
+      ${ICONS[n.icon]}<span>${n.label}</span>
+      ${n.id==='alertas' && critCount>0 ? `<span class="nav-badge">${critCount}</span>`:''}
+    </div>`;
+  }
+  function pill(label, ok){
+    return `<div class="pill ${ok?'':'down'}"><span class="dot"></span>${label}</div>`;
+  }
+  renderContent();
+}
+function setTab(t){ currentTab = t; render(); }
+
+function renderContent(){
+  const c = document.getElementById('content');
+  const fns = {
+    dashboard: renderDashboard, envios: renderEnvios, monitor: renderMonitor,
+    sensores: renderSensores, alertas: renderAlertas, simulaciones: renderSimulaciones,
+    entrega: renderEntrega, blockchain: renderBlockchain, database: renderDatabase,
+    audit: renderAudit, demo: renderDemo
+  };
+  c.innerHTML = fns[currentTab]();
+  afterRenderHooks[currentTab] && afterRenderHooks[currentTab]();
+}
+const afterRenderHooks = {};
+
+/* ============================== DASHBOARD ============================== */
+function renderDashboard(){
+  const env = activeEnvio();
+  const totalLitros = state.envios.reduce((s,e)=>s+e.volumen_inicial,0);
+  const litrosActuales = state.envios.reduce((s,e)=>s+e.volumen_actual,0);
+  const activos = state.envios.filter(e=>['IN_TRANSIT','CREATED','WARNING'].includes(e.estado)).length;
+  return `
+    <h1 class="page-title">Centro de Control</h1>
+    <p class="page-desc">Estado operativo en tiempo real de la custodia digital de combustible, desde la Planta de Senkata hasta la estación de destino en La Paz.</p>
+
+    <div class="grid grid-kpi" style="margin-bottom:18px;">
+      ${kpi('Envíos totales', state.envios.length, 'var(--cyan)')}
+      ${kpi('Envíos activos', activos, 'var(--indigo)')}
+      ${kpi('Litros transportados', fmt(totalLitros)+' L', 'var(--cyan)')}
+      ${kpi('Litros actuales', fmt(litrosActuales)+' L', 'var(--green)')}
+      ${kpi('Lecturas sensores', state.sensores.length, 'var(--cyan)')}
+      ${kpi('Eventos registrados', state.eventos.length, 'var(--amber)')}
+      ${kpi('Alertas críticas', countAlertasAbiertas(), 'var(--red)')}
+      ${kpi('Bloques blockchain', state.bloques.length, 'var(--indigo)')}
+    </div>
+
+    <div class="grid grid-2">
+      <div class="card">
+        <div class="card-title">Envío activo</div>
+        ${env ? `
+          <div class="flex-between" style="margin-bottom:10px;">
+            <div>
+              <div style="font-family:var(--display);font-size:16px;">${codeEnvio(env.id)}</div>
+              <div class="mono small muted">${env.camion} · ${env.origen} → ${env.destino}</div>
+            </div>
+            ${badgeForEstado(env.estado)}
+          </div>
+          <div class="grid grid-3">
+            <div><div class="kpi-label">Volumen inicial</div><div style="font-family:var(--mono);font-size:15px;margin-top:4px;">${fmt(env.volumen_inicial)} L</div></div>
+            <div><div class="kpi-label">Volumen actual</div><div style="font-family:var(--mono);font-size:15px;margin-top:4px;color:var(--cyan);">${fmt(env.volumen_actual)} L</div></div>
+            <div><div class="kpi-label">Precintos</div><div style="font-family:var(--mono);font-size:15px;margin-top:4px;">${env.estado==='BLOCKED'?'⚠️ REVISAR':'🔒 LOCKED'}</div></div>
+          </div>
+        ` : `<div class="empty-state"><div class="icon">🛢️</div>No hay un envío activo. Crea un lote en la pestaña <b>Envíos</b>.</div>`}
+      </div>
+      <div class="card">
+        <div class="card-title">Custodia</div>
+        <div class="mono small" style="line-height:2;">
+          <div>Origen: <span style="color:var(--text)">Planta de Senkata</span></div>
+          <div>Destino: <span style="color:var(--text)">La Paz</span></div>
+          <div>Camión demo: <span style="color:var(--text)">TRUCK-LPZ-001</span></div>
+          <div>Persistencia: <span style="color:var(--text)">almacenamiento local del navegador</span></div>
+        </div>
+        <div class="divider"></div>
+        <div class="mono small muted">HSM: simulación criptográfica SHA-256 para fines de demostración — no representa un módulo de hardware físico.</div>
+      </div>
+    </div>
+
+    <div class="card" style="margin-top:14px;">
+      <div class="card-title">Cadena de custodia (últimos bloques)</div>
+      ${chainStrip(state.bloques.slice(-6))}
+    </div>
+  `;
+}
+function kpi(label, value, color){
+  return `<div class="kpi-card"><div class="kpi-accent" style="background:${color}"></div><div class="kpi-label">${label}</div><div class="kpi-value">${value}</div></div>`;
+}
+function chainStrip(bloques){
+  if(bloques.length===0) return `<div class="empty-state"><div class="icon">⛓️</div>Aún no se han registrado bloques.</div>`;
+  return `<div class="chain-strip">${bloques.map((b,i)=>`
+    ${i>0?'<div class="chain-link"></div>':''}
+    <div class="chain-block ${b.numero===0?'genesis':''} ${b._tampered?'tamper':''}">
+      <div class="num">BLOQUE #${b.numero}</div>
+      <div class="ev">${b.evento}</div>
+      <div class="h">${truncHash(b.hash_actual,16)}</div>
+    </div>
+  `).join('')}</div>`;
+}
+
+/* ============================== ENVÍOS ============================== */
+function renderEnvios(){
+  return `
+    <h1 class="page-title">Envíos</h1>
+    <p class="page-desc">Crea y consulta lotes de combustible en custodia. Cada envío tiene un identificador único y un historial trazable.</p>
+    <div class="btn-row" style="margin-top:0;margin-bottom:16px;">
+      <button class="btn btn-primary" onclick="openCrearLoteModal()">+ Crear lote de combustible</button>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>ID</th><th>Camión</th><th>Origen</th><th>Destino</th><th>Vol. inicial</th><th>Vol. actual</th><th>Estado</th><th>Fecha</th><th></th></tr></thead>
+        <tbody>
+        ${state.envios.length===0 ? `<tr><td colspan="9"><div class="empty-state"><div class="icon">📦</div>No existen envíos todavía.</div></td></tr>` :
+          state.envios.slice().reverse().map(e=>`
+            <tr>
+              <td>${codeEnvio(e.id)}</td>
+              <td>${e.camion}</td>
+              <td>${e.origen}</td>
+              <td>${e.destino}</td>
+              <td>${fmt(e.volumen_inicial)} L</td>
+              <td>${fmt(e.volumen_actual)} L</td>
+              <td>${badgeForEstado(e.estado)}</td>
+              <td>${e.fecha}</td>
+              <td><button class="btn btn-sm" onclick="seleccionarEnvio(${e.id})">${state.activeEnvioId===e.id?'Activo':'Usar'}</button></td>
+            </tr>
+          `).join('')}
+        </tbody>
+      </table>
+    </div>
+  `;
+}
+function seleccionarEnvio(id){ state.activeEnvioId = id; saveState(); render(); toast('Envío seleccionado', codeEnvio(id)+' es ahora el envío activo.', 'success'); }
+
+function openCrearLoteModal(){
+  const overlay = document.createElement('div');
+  overlay.className = 'modal-overlay';
+  overlay.id = 'modal-overlay';
+  overlay.innerHTML = `
+    <div class="modal">
+      <h3>Crear lote de combustible</h3>
+      <p class="hint">Se generará un identificador único, un registro en la base de datos y un bloque en la blockchain (evento MINT_FUEL_BATCH).</p>
+      <div class="field"><label>Camión (placa)</label><input id="f-placa" value="TRUCK-LPZ-001"></div>
+      <div class="field"><label>Conductor</label><input id="f-conductor" value="Conductor Demo"></div>
+      <div class="field"><label>Origen</label><input id="f-origen" value="Planta de Senkata"></div>
+      <div class="field"><label>Destino</label><input id="f-destino" value="Estación La Paz"></div>
+      <div class="field"><label>Volumen inicial (L)</label><input id="f-volumen" type="number" value="20000"></div>
+      <div class="modal-actions">
+        <button class="btn" onclick="closeModal()">Cancelar</button>
+        <button class="btn btn-primary" onclick="submitCrearLote()">Crear lote</button>
+      </div>
+    </div>
+  `;
+  document.body.appendChild(overlay);
+}
+function closeModal(){ const m = document.getElementById('modal-overlay'); if(m) m.remove(); }
+async function submitCrearLote(){
+  const placa = document.getElementById('f-placa').value.trim() || 'TRUCK-LPZ-001';
+  const conductor = document.getElementById('f-conductor').value.trim();
+  const origen = document.getElementById('f-origen').value.trim();
+  const destino = document.getElementById('f-destino').value.trim();
+  const volumen = parseFloat(document.getElementById('f-volumen').value) || 0;
+  closeModal();
+  const {envio, bloque} = await crearLote({placa, conductor, origen, destino, volumen});
+  toast('LOTE CREADO', `${codeEnvio(envio.id)} · ${fmt(volumen)} L · Precintos: LOCKED`, 'success');
+  render();
+}
+
+/* ============================== MONITOREO / MAPA ============================== */
+function projectPoint(lat, lon, W, H){
+  const lats = RUTA.map(p=>p.lat), lons = RUTA.map(p=>p.lon);
+  const minLat=Math.min(...lats), maxLat=Math.max(...lats), minLon=Math.min(...lons), maxLon=Math.max(...lons);
+  const pad = 40;
+  const x = pad + ((lon-minLon)/((maxLon-minLon)||1))*(W-2*pad);
+  const y = H - pad - ((lat-minLat)/((maxLat-minLat)||1))*(H-2*pad);
+  return {x,y};
+}
+function renderMonitor(){
+  const env = activeEnvio();
+  const W=640, H=280;
+  const pts = RUTA.map(p=>projectPoint(p.lat,p.lon,W,H));
+  const pathD = pts.map((p,i)=> (i===0?'M':'L')+p.x+' '+p.y).join(' ');
+  const misEnvioSensores = env ? state.sensores.filter(s=>s.envio_id===env.id) : [];
+  const last = misEnvioSensores[misEnvioSensores.length-1];
+  // La posición se determina por el punto de ruta de la última lectura real,
+  // no por el conteo total de lecturas (que crecía en cada nueva ejecución
+  // y hacía que el camión "saltara" directo al destino en corridas repetidas).
+  const lastIdx = last ? RUTA.findIndex(p=>p.nombre===last.punto) : -1;
+  const truckPos = lastIdx>=0 ? pts[lastIdx] : pts[0];
+
+  return `
+    <h1 class="page-title">Monitoreo en Tiempo Real</h1>
+    <p class="page-desc">Recorrido Senkata → El Alto → Autopista → La Paz → Estación destino. El mapa se representa con coordenadas reales del proyecto original mediante una vista SVG (alternativa equivalente a un mapa de teselas para el entorno de demostración).</p>
+    <div class="grid grid-2">
+      <div class="card">
+        <div class="card-title">Ruta y posición</div>
+        <div class="map-wrap">
+          <svg viewBox="0 0 ${W} ${H}" style="width:100%;height:auto;">
+            <path d="${pathD}" stroke="#232935" stroke-width="6" fill="none" stroke-linecap="round"/>
+            <path d="${pathD}" stroke="#29D3C0" stroke-width="2" fill="none" stroke-dasharray="6 6" opacity="0.6"/>
+            ${pts.map((p,i)=>`
+              <circle cx="${p.x}" cy="${p.y}" r="5" fill="${i<=lastIdx?'#29D3C0':'#2A313D'}" stroke="#0A0D12" stroke-width="2"/>
+              <text x="${p.x}" y="${p.y-12}" fill="#7C8798" font-size="9.5" font-family="IBM Plex Mono" text-anchor="middle">${RUTA[i].nombre}</text>
+            `).join('')}
+            ${lastIdx>=0 ? `<circle cx="${truckPos.x}" cy="${truckPos.y}" r="8" fill="none" stroke="#F5A623" stroke-width="2"><animate attributeName="r" values="7;11;7" dur="1.6s" repeatCount="indefinite"/></circle>
+            <text x="${truckPos.x}" y="${truckPos.y+22}" fill="#F5A623" font-size="14" text-anchor="middle">🚛</text>` : ''}
+          </svg>
+        </div>
+        <div class="map-legend">
+          <span><i style="background:#29D3C0"></i>Recorrido visitado</span>
+          <span><i style="background:#2A313D"></i>Pendiente</span>
+          <span><i style="background:#F5A623"></i>Posición actual del camión</span>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-title">Lectura más reciente</div>
+        ${!env ? `<div class="empty-state">Selecciona un envío activo.</div>` :
+          !last ? `<div class="empty-state">Aún no hay lecturas. Inicia la simulación de transporte.</div>` : `
+          <div class="mono" style="line-height:2.1;font-size:13px;">
+            <div class="flex-between"><span class="muted">Punto</span><span>${last.punto}</span></div>
+            <div class="flex-between"><span class="muted">Volumen</span><span style="color:var(--cyan)">${fmt(last.volumen)} L</span></div>
+            <div class="flex-between"><span class="muted">Densidad</span><span>${last.densidad}</span></div>
+            <div class="flex-between"><span class="muted">Temperatura</span><span>${last.temperatura} °C</span></div>
+            <div class="flex-between"><span class="muted">GPS</span><span>${last.latitud}, ${last.longitud}</span></div>
+            <div class="flex-between"><span class="muted">Precinto</span><span>${env.estado==='BLOCKED'?'⚠️ REVISAR':'🔒 LOCKED'}</span></div>
+            <div class="flex-between"><span class="muted">Actualizado</span><span>${last.fecha}</span></div>
+          </div>
+        `}
+        <div class="divider"></div>
+        <button class="btn btn-primary" style="width:100%;" ${(!env||busy)?'disabled':''} onclick="iniciarSimulacionViaje()">▶ Iniciar simulación de viaje</button>
+      </div>
+    </div>
+
+    <div class="grid grid-3" style="margin-top:14px;">
+      ${miniChart('Volumen (L)', misEnvioSensores.map(s=>s.volumen), '#29D3C0')}
+      ${miniChart('Temperatura (°C)', misEnvioSensores.map(s=>s.temperatura), '#F5A623')}
+      ${miniChart('Densidad', misEnvioSensores.map(s=>s.densidad), '#6E7BFF')}
+    </div>
+  `;
+}
+function miniChart(title, values, color){
+  const W=340,H=110,pad=10;
+  let body;
+  if(!values || values.length<2){
+    body = `<div class="empty-state small" style="padding:24px 10px;">Sin datos suficientes.</div>`;
+  } else {
+    const min=Math.min(...values), max=Math.max(...values);
+    const range = (max-min)||1;
+    const pts = values.map((v,i)=>{
+      const x = pad + (i/(values.length-1))*(W-2*pad);
+      const y = H-pad - ((v-min)/range)*(H-2*pad);
+      return `${x},${y}`;
+    }).join(' ');
+    body = `<svg viewBox="0 0 ${W} ${H}" style="width:100%;height:${H}px;">
+      <polyline points="${pts}" fill="none" stroke="${color}" stroke-width="2"/>
+      ${values.map((v,i)=>{
+        const x = pad + (i/(values.length-1))*(W-2*pad);
+        const y = H-pad - ((v-min)/range)*(H-2*pad);
+        return `<circle cx="${x}" cy="${y}" r="2.5" fill="${color}"/>`;
+      }).join('')}
+    </svg>`;
+  }
+  return `<div class="card"><div class="card-title">${title}</div>${body}</div>`;
+}
+
+async function iniciarSimulacionViaje(){
+  const env = activeEnvio();
+  if(!env || busy) return;
+  busy = true;
+  // Limpiar lecturas previas de este envío para que una nueva corrida
+  // de la simulación anime el recorrido desde el inicio.
+  state.sensores = state.sensores.filter(s=>s.envio_id!==env.id);
+  env.volumen_actual = env.volumen_inicial;
+  env.estado='IN_TRANSIT'; await saveState(); render();
+  for(let i=0;i<RUTA.length;i++){
+    await simularViajePaso(i, env, ()=>{ renderContent(); });
+  }
+  busy = false;
+  toast('Transporte finalizado', `Volumen final: ${fmt(env.volumen_actual)} L`, 'success');
+  renderContent();
+}
+
+/* ============================== SENSORES ============================== */
+function renderSensores(){
+  const rows = state.sensores.slice().reverse();
+  return `
+    <h1 class="page-title">Sensores IoT</h1>
+    <p class="page-desc">Historial de lecturas capturadas durante el transporte, firmadas criptográficamente por el sensor simulado.</p>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>ID</th><th>Envío</th><th>Punto</th><th>Volumen</th><th>Densidad</th><th>Temp.</th><th>Lat</th><th>Lon</th><th>Firma</th><th>Fecha</th></tr></thead>
+        <tbody>
+        ${rows.length===0 ? `<tr><td colspan="10"><div class="empty-state"><div class="icon">📡</div>No existen lecturas de sensores.</div></td></tr>` :
+          rows.map(s=>`
+            <tr>
+              <td>${s.id}</td><td>${codeEnvio(s.envio_id)}</td><td>${s.punto||'-'}</td>
+              <td>${fmt(s.volumen)} L</td><td>${s.densidad}</td><td>${s.temperatura} °C</td>
+              <td>${s.latitud}</td><td>${s.longitud}</td>
+              <td title="${s.firma}">${truncHash(s.firma,14)}</td><td>${s.fecha}</td>
+            </tr>
+          `).join('')}
+        </tbody>
+      </table>
+    </div>
+  `;
+}
+
+/* ============================== ALERTAS ============================== */
+function renderAlertas(){
+  const rows = state.eventos.slice().reverse();
+  const counts = {CRITICA:0, WARNING:0, INFO:0};
+  state.eventos.forEach(e=>counts[e.severidad]=(counts[e.severidad]||0)+1);
+  return `
+    <h1 class="page-title">Centro de Alertas</h1>
+    <p class="page-desc">Eventos de seguridad y anomalías detectadas a lo largo del recorrido.</p>
+    <div class="grid grid-3" style="margin-bottom:16px;">
+      ${kpi('Críticas', counts.CRITICA||0, 'var(--red)')}
+      ${kpi('Advertencias', counts.WARNING||0, 'var(--amber)')}
+      ${kpi('Informativas', counts.INFO||0, 'var(--muted)')}
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>ID</th><th>Envío</th><th>Tipo</th><th>Descripción</th><th>Severidad</th><th>Estado</th><th>Fecha</th><th></th></tr></thead>
+        <tbody>
+        ${rows.length===0 ? `<tr><td colspan="8"><div class="empty-state"><div class="icon">🔔</div>No existen alertas registradas.</div></td></tr>` :
+          rows.map(e=>`
+            <tr style="${e.severidad==='CRITICA' && e.estado==='OPEN' ? 'background:rgba(255,71,87,0.05)':''}">
+              <td>${e.id}</td><td>${codeEnvio(e.envio_id)}</td><td>${e.tipo}</td><td style="font-family:var(--body);color:var(--text)">${e.severidad==='CRITICA'?'🚨 ':''}${e.descripcion}</td>
+              <td>${badgeForSeveridad(e.severidad)}</td>
+              <td>${e.estado==='OPEN'?'<span class="badge badge-blocked">ABIERTA</span>':'<span class="badge badge-dest">RESUELTA</span>'}</td>
+              <td>${e.fecha}</td>
+              <td>${e.estado==='OPEN'?`<button class="btn btn-sm" onclick="resolverAlerta(${e.id})">Marcar resuelta</button>`:''}</td>
+            </tr>
+          `).join('')}
+        </tbody>
+      </table>
+    </div>
+  `;
+}
+function resolverAlerta(id){
+  const e = state.eventos.find(ev=>ev.id===id);
+  if(e){ e.estado='RESOLVED'; saveState(); render(); toast('Alerta resuelta', 'Evento #'+id+' marcado como resuelto.', 'success'); }
+}
+
+/* ============================== SIMULACIONES ============================== */
+function renderSimulaciones(){
+  const env = activeEnvio();
+  return `
+    <h1 class="page-title">Simulaciones</h1>
+    <p class="page-desc">Escenarios de prueba: pérdida anormal de volumen ("ordeño") y ataque de manipulación al sensor con verificación de firma HSM simulada.</p>
+    ${!env ? `<div class="card"><div class="empty-state"><div class="icon">⚠️</div>Selecciona o crea un envío activo antes de ejecutar una simulación.</div></div>` : `
+    <div class="grid grid-2">
+      <div class="card">
+        <div class="card-title">Simular ordeño / pérdida anormal</div>
+        <p class="small muted">Compara el volumen esperado contra el volumen detectado. Si la diferencia supera 1.000 L, se genera una alerta crítica y se bloquea la entrega.</p>
+        <button class="btn btn-warn" ${busy?'disabled':''} onclick="runOrdeno()">Simular ordeño</button>
+        <div id="ordeno-result"></div>
+      </div>
+      <div class="card">
+        <div class="card-title">Simulación de ataque al sensor</div>
+        <p class="small muted">Un atacante intenta modificar el volumen reportado. El sistema verifica la firma HSM simulada contra los datos originales.</p>
+        <button class="btn btn-danger" ${busy?'disabled':''} onclick="runAtaque()">Simular ataque</button>
+        <div class="flow" id="attack-flow" style="margin-top:16px;">
+          ${['SENSOR','DATOS ORIGINALES','FIRMA DIGITAL','⚠️ INTENTO DE MANIPULACIÓN','DATOS MODIFICADOS + HSM','❌ FIRMA INVÁLIDA / 🚨 RECHAZADA'].map((s,i)=>`
+            <div class="flow-step" id="flow-step-${i}">${s}</div>${i<5?'<div class="flow-arrow">↓</div>':''}
+          `).join('')}
+        </div>
+      </div>
+    </div>`}
+  `;
+}
+async function runOrdeno(){
+  const env = activeEnvio(); if(!env||busy) return;
+  busy = true; render();
+  const r = await simularOrdeno(env);
+  busy = false;
+  const box = document.getElementById('ordeno-result');
+  renderContent();
+  await sleep(0);
+  const box2 = document.getElementById('ordeno-result');
+  if(box2){
+    box2.innerHTML = `
+      <div class="divider"></div>
+      <div class="mono" style="line-height:2;font-size:13px;">
+        <div class="flex-between"><span class="muted">Volumen esperado</span><span>${fmt(r.volumen_esperado)} L</span></div>
+        <div class="flex-between"><span class="muted">Volumen detectado</span><span>${fmt(r.volumen_detectado)} L</span></div>
+        <div class="flex-between"><span class="muted">Diferencia</span><span style="color:${r.anomalia?'var(--red)':'var(--green)'}">${fmt(r.diferencia)} L</span></div>
+        <div class="flex-between"><span class="muted">Resultado</span><span>${r.anomalia?'🚨 ANOMALÍA DETECTADA':'🟢 SIN ANOMALÍA'}</span></div>
+        <div class="flex-between"><span class="muted">Entrega</span><span>${r.anomalia?'<b style="color:var(--red)">BLOCKED</b>':'<b style="color:var(--green)">OK</b>'}</span></div>
+      </div>`;
+  }
+  if(r.anomalia) toast('ALERTA DE SEGURIDAD', 'Posible ordeño/sifonamiento detectado. Entrega bloqueada.', 'error');
+}
+async function runAtaque(){
+  const env = activeEnvio(); if(!env||busy) return;
+  busy = true; renderContent();
+  const steps = document.querySelectorAll('#attack-flow .flow-step');
+  const updateFlow = (i)=>{
+    steps.forEach(s=>s.classList.remove('active'));
+    if(i==='ok'){ steps[2].classList.add('active'); return; }
+    for(let k=0;k<=i;k++){ if(steps[k]) steps[k].classList.add('active'); }
+    if(i===5 && steps[5]) steps[5].classList.add('fail');
+  };
+  const r = await simularAtaqueSensor(env, updateFlow);
+  busy = false;
+  renderContent();
+  if(!r.firmaValida) toast('TRANSACCIÓN RECHAZADA', 'Firma inválida — datos manipulados. Entrega bloqueada.', 'error');
+  else toast('Firma válida', 'No se detectó manipulación en esta lectura.', 'success');
+}
+
+/* ============================== ENTREGA / DUAL HANDSHAKE ============================== */
+function renderEntrega(){
+  const env = activeEnvio();
+  return `
+    <h1 class="page-title">Control de Entrega — Dual Handshake</h1>
+    <p class="page-desc">Antes de autorizar la entrega se verifican cuatro condiciones: posición GPS, disponibilidad de tanque receptor, validez de firma y estado del precinto.</p>
+    ${!env ? `<div class="card"><div class="empty-state"><div class="icon">🚚</div>Selecciona un envío activo.</div></div>` : `
+    <div class="grid grid-2">
+      <div class="card">
+        <div class="card-title">Envío</div>
+        <div class="mono" style="line-height:2;font-size:13px;">
+          <div class="flex-between"><span class="muted">Código</span><span>${codeEnvio(env.id)}</span></div>
+          <div class="flex-between"><span class="muted">Camión</span><span>${env.camion}</span></div>
+          <div class="flex-between"><span class="muted">Destino</span><span>${env.destino}</span></div>
+          <div class="flex-between"><span class="muted">Volumen actual</span><span>${fmt(env.volumen_actual)} L</span></div>
+          <div class="flex-between"><span class="muted">Estado</span><span>${badgeForEstado(env.estado)}</span></div>
+        </div>
+        <div class="divider"></div>
+        <button class="btn btn-indigo" style="width:100%;" ${busy?'disabled':''} onclick="runEntrega()">Autorizar entrega (ejecutar Dual Handshake)</button>
+      </div>
+      <div class="card">
+        <div class="card-title">Validaciones</div>
+        <div id="handshake-list">
+          ${['gps','tanque','firma','precinto'].map(k=>`
+            <div class="checklist-item" id="chk-${k}"><span class="ico">○</span>${labelChk(k)}</div>
+          `).join('')}
+        </div>
+        <div id="handshake-result" style="margin-top:14px;"></div>
+      </div>
+    </div>`}
+  `;
+}
+function labelChk(k){ return {gps:'GPS', tanque:'Tanque receptor', firma:'Firma HSM', precinto:'Precinto'}[k]; }
+async function runEntrega(){
+  const env = activeEnvio(); if(!env||busy) return;
+  busy = true; renderContent();
+  const r = await ejecutarEntrega(env, (key, ok)=>{
+    const el = document.getElementById('chk-'+key);
+    if(el){ el.classList.add('active'); el.querySelector('.ico').textContent = ok?'✓':'✗'; el.style.color = ok?'var(--green)':'var(--red)'; }
+  });
+  busy = false;
+  const res = document.getElementById('handshake-result');
+  if(res){
+    res.innerHTML = r.autorizado
+      ? `<div class="badge badge-auth" style="font-size:13px;padding:8px 14px;">🟢 DELIVERY AUTHORIZED</div>`
+      : `<div class="badge badge-blocked" style="font-size:13px;padding:8px 14px;">🔴 DELIVERY BLOCKED</div>`;
+  }
+  toast(r.autorizado?'Entrega autorizada':'Entrega bloqueada', r.autorizado?'Válvula abierta. Combustible autorizado.':'Válvula cerrada. Combustible no autorizado.', r.autorizado?'success':'error');
+  renderContent();
+}
+
+/* ============================== BLOCKCHAIN ============================== */
+function renderBlockchain(){
+  return `
+    <h1 class="page-title">Blockchain</h1>
+    <p class="page-desc">Cada evento crítico del sistema genera un bloque enlazado mediante SHA-256 al hash del bloque anterior, formando una cadena de evidencia inmutable.</p>
+    <div class="btn-row" style="margin-top:0;margin-bottom:16px;">
+      <button class="btn btn-primary" onclick="runVerificarIntegridad()">Verificar integridad</button>
+      <button class="btn btn-danger" onclick="runAlterarBloque()">Simular alteración de bloque (demo)</button>
+    </div>
+    <div id="integridad-result"></div>
+    <div class="card" style="margin-top:14px;">
+      <div class="card-title">Cadena completa</div>
+      ${chainStrip(state.bloques)}
+    </div>
+    <div class="table-wrap" style="margin-top:14px;">
+      <table>
+        <thead><tr><th>#</th><th>Evento</th><th>Hash anterior</th><th>Hash actual</th><th>Fecha</th></tr></thead>
+        <tbody>
+        ${state.bloques.length===0? `<tr><td colspan="5"><div class="empty-state">Blockchain vacía.</div></td></tr>` :
+          state.bloques.slice().reverse().map(b=>`
+            <tr style="${b._tampered?'background:rgba(255,71,87,0.06)':''}">
+              <td>${b.numero}</td><td>${b.evento}${b._tampered?' ⚠️':''}</td>
+              <td title="${b.hash_anterior}">${truncHash(b.hash_anterior,16)}</td>
+              <td title="${b.hash_actual}">${truncHash(b.hash_actual,16)}</td>
+              <td>${b.fecha}</td>
+            </tr>
+          `).join('')}
+        </tbody>
+      </table>
+    </div>
+  `;
+}
+async function runVerificarIntegridad(){
+  const r = await verificarIntegridadBlockchain();
+  const el = document.getElementById('integridad-result');
+  if(el){
+    el.innerHTML = `<div class="card" style="border-color:${r.ok?'var(--green)':'var(--red)'}">
+      <div style="font-family:var(--display);font-size:15px;color:${r.ok?'var(--green)':'var(--red)'}">${r.ok?'🟢 BLOCKCHAIN ÍNTEGRA':'🔴 BLOCKCHAIN ALTERADA'}</div>
+      <div class="small muted" style="margin-top:6px;">${r.detalle}</div>
+    </div>`;
+  }
+}
+function runAlterarBloque(){
+  const b = alterarBloqueDemo();
+  if(!b){ toast('Sin bloques', 'No hay bloques para alterar.', 'warn'); return; }
+  saveState(); renderContent();
+  toast('Bloque alterado (demo)', `Se modificó el contenido del bloque #${b.numero} sin recalcular su hash.`, 'warn');
+}
+
+/* ============================== BASE DE DATOS ============================== */
+const DB_TABLES = {
+  camiones: {cols:['id','placa','conductor','capacidad','estado','fecha_registro']},
+  envios: {cols:['id','camion','origen','destino','volumen_inicial','volumen_actual','estado','fecha']},
+  sensores: {cols:['id','envio_id','volumen','densidad','temperatura','latitud','longitud','firma','fecha']},
+  eventos: {cols:['id','envio_id','tipo','descripcion','severidad','estado','fecha']},
+  bloques: {cols:['numero','evento','hash_anterior','hash_actual','fecha']},
+};
+function renderDatabase(){
+  const t = DB_TABLES[selectedDbTable];
+  const rows = state[selectedDbTable] || [];
+  return `
+    <h1 class="page-title">Base de Datos</h1>
+    <p class="page-desc">Explora las tablas persistidas del sistema (equivalente web de las tablas SQLite del prototipo original).</p>
+    <div class="segmented">
+      ${Object.keys(DB_TABLES).map(k=>`<button class="${selectedDbTable===k?'active':''}" onclick="selectDbTable('${k}')">${k}</button>`).join('')}
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr>${t.cols.map(c=>`<th>${c}</th>`).join('')}</tr></thead>
+        <tbody>
+        ${rows.length===0 ? `<tr><td colspan="${t.cols.length}"><div class="empty-state">La tabla está vacía.</div></td></tr>` :
+          rows.slice().reverse().map(r=>`<tr>${t.cols.map(c=>{
+            let v = r[c];
+            if(c==='id' && selectedDbTable==='envios') v = codeEnvio(r.id);
+            if((c==='hash_anterior'||c==='hash_actual'||c==='firma') && v) v = `<span title="${v}">${truncHash(v,14)}</span>`;
+            if(typeof v === 'number' && (c.includes('volumen'))) v = fmt(v)+' L';
+            return `<td>${v!==undefined?v:''}</td>`;
+          }).join('')}</tr>`).join('')}
+        </tbody>
+      </table>
+    </div>
+    <div class="small muted mono" style="margin-top:8px;">Registros mostrados: ${rows.length}</div>
+  `;
+}
+function selectDbTable(k){ selectedDbTable = k; renderContent(); }
+
+/* ============================== AUDITORÍA ============================== */
+function renderAudit(){
+  const items = [];
+  state.envios.forEach(e=>items.push({fecha:e.fecha, tipo:'ok', title:'Lote creado', meta:codeEnvio(e.id), desc:`${e.origen} → ${e.destino} · ${fmt(e.volumen_inicial)} L`}));
+  state.sensores.forEach(s=>items.push({fecha:s.fecha, tipo:'', title:'Lectura IoT registrada', meta:codeEnvio(s.envio_id)+' · '+(s.punto||''), desc:`Volumen ${fmt(s.volumen)} L · Densidad ${s.densidad} · Temp ${s.temperatura}°C`}));
+  state.bloques.forEach(b=>items.push({fecha:b.fecha, tipo: b.evento.includes('FAILURE')||b.evento.includes('TAMPER')?'crit':(b.evento.includes('BLOCKED')?'warn':'ok'), title:'Bloque blockchain: '+b.evento, meta:'#'+b.numero, desc:truncHash(b.hash_actual,24)}));
+  state.eventos.forEach(e=>items.push({fecha:e.fecha, tipo: e.severidad==='CRITICA'?'crit':'warn', title:'Alerta: '+e.tipo, meta:codeEnvio(e.envio_id), desc:e.descripcion}));
+  items.sort((a,b)=> a.fecha.localeCompare(b.fecha));
+  return `
+    <h1 class="page-title">Auditoría</h1>
+    <p class="page-desc">Línea de tiempo completa que combina lotes, lecturas IoT, bloques de blockchain y alertas, para demostrar la trazabilidad extremo a extremo.</p>
+    <div class="card">
+      ${items.length===0 ? `<div class="empty-state"><div class="icon">🕒</div>Sin actividad registrada todavía.</div>` : `
+      <div class="timeline">
+        ${items.map(it=>`
+          <div class="t-item ${it.tipo}">
+            <div class="t-dot"></div>
+            <div class="t-title">${it.title}</div>
+            <div class="t-meta">${it.meta} · ${it.fecha}</div>
+            <div class="t-desc">${it.desc}</div>
+          </div>
+        `).join('')}
+      </div>`}
+    </div>
+  `;
+}
+
+/* ============================== MODO DEMOSTRACIÓN ============================== */
+function renderDemo(){
+  return `
+    <h1 class="page-title">Modo Demostración</h1>
+    <p class="page-desc">Ejecuta un escenario completo de principio a fin, ideal para un pitch o exposición. Cada demo crea su propio lote y recorre todo el flujo automáticamente.</p>
+    <div class="grid grid-2">
+      <div class="card">
+        <div class="card-title">Demo 1 — Transporte normal</div>
+        <p class="small muted">Lote creado → transporte → sensores normales → blockchain → dual handshake correcto → entrega autorizada.</p>
+        <button class="btn btn-primary" style="width:100%;" ${busy?'disabled':''} onclick="runDemo('normal')">▶ Ejecutar demo completa</button>
+      </div>
+      <div class="card">
+        <div class="card-title">Demo 2 — Ataque / robo</div>
+        <p class="small muted">Transporte iniciado → sensor manipulado → firma inválida → alerta crítica → entrega bloqueada → evento registrado en blockchain.</p>
+        <button class="btn btn-danger" style="width:100%;" ${busy?'disabled':''} onclick="runDemo('ataque')">▶ Ejecutar demo completa</button>
+      </div>
+    </div>
+    <div class="card" style="margin-top:14px;">
+      <div class="card-title">Registro de la demostración</div>
+      <div id="demo-log" class="mono small" style="line-height:1.9;min-height:40px;"></div>
+    </div>
+    <div class="btn-row">
+      <button class="btn" onclick="resetDemo()">↺ Reiniciar datos de demostración</button>
+    </div>
+  `;
+}
+function logDemo(msg){
+  const el = document.getElementById('demo-log');
+  if(el) el.innerHTML += `<div>› ${msg}</div>`;
+}
+async function runDemo(kind){
+  if(busy) return;
+  busy = true; renderContent();
+  const {envio} = await crearLote({placa:'TRUCK-LPZ-001', conductor:'Conductor Demo', origen:'Planta de Senkata', destino:'Estación La Paz', volumen:20000});
+  logDemo(`🟢 Lote creado: ${codeEnvio(envio.id)}`);
+  renderContent();
+  for(let i=0;i<RUTA.length;i++){ await simularViajePaso(i, envio, ()=>{}); }
+  logDemo(`🟢 Transporte finalizado. Volumen: ${fmt(envio.volumen_actual)} L`);
+  if(kind==='ataque'){
+    const r = await simularAtaqueSensor(envio, ()=>{});
+    logDemo(r.firmaValida ? '🟢 Firma válida' : '🚨 Firma inválida — manipulación detectada');
+  } else {
+    logDemo('🟢 Sensores dentro de rango normal');
+  }
+  const entrega = await ejecutarEntrega(envio, ()=>{});
+  logDemo(entrega.autorizado ? '🟢 Dual Handshake correcto → Entrega AUTORIZADA' : '🔴 Dual Handshake falló → Entrega BLOQUEADA');
+  const integridad = await verificarIntegridadBlockchain();
+  logDemo(integridad.ok ? '🔐 Blockchain íntegra' : '⚠️ Blockchain alterada');
+  busy = false;
+  renderContent();
+}
+async function resetDemo(){
+  busy=false;
+  await seedDemo();
+  toast('Demostración reiniciada', 'Se restauraron los datos iniciales.', 'success');
+  render();
+}
+
+/* ============================== INIT ============================== */
+(async function main(){
+  const loaded = await loadState();
+  if(!loaded || !state) await seedDemo();
+  render();
+})();
+</script>
+</body>
+</html>
